@@ -1,34 +1,42 @@
-shape = input("Shape (Circle/Square/Rectangle/Triangle): ")
-print(f"{shape} Vacuum Cleaner selected.")
+shape_map = {
+    "c": "Circle",
+    "s": "Square",
+    "r": "Rectangle",
+    "t": "Triangle"
+}
+shape_input = input("Enter shape (c=Circle, s=Square, r=Rectangle, t=Triangle): ").lower()
 
-def show_commands():
-    print("\nCommands:")
-    print("a = Auto Clean")
-    print("s = Stop")
-    print("l = Turn Left")
-    print("r = Turn Right")
-    print("d = Dock")
-    print("e = Exit")
+if shape_input not in shape_map:
+    print("Invalid shape. Use: c, s, r, t.")
+    exit()
+shape = shape_map[shape_input]
+print(f"\nYou selected: {shape} Vacuum Cleaner")
 
-show_commands()
+running = False
 
+def show_cmds():
+    print("\nCommands: a=auto, s=stop, l=left, r=right, d=dock, e=exit")
+show_cmds()
 while True:
     cmd = input("Enter command: ").lower()
     if cmd == "a":
-        run = True
-        print("Auto Clean started...")
+        running = True
+        print(f"{shape} Cleaner started in auto mode...")
         for side in ["left", "right"]:
             print(f"Sliding {side}... Path is clear.")
-        show_commands()
+        show_cmds()
     elif cmd == "s":
-        run = False
-        print("Stopped.")
+        running = False
+        print(f"{shape} Cleaner stopped.")
     elif cmd in "lr":
-        print(f"Turned {cmd}.") if run else print("Start first!")
+        if running:
+            print(f"{shape} Cleaner turned {cmd}.")
+        else:
+            print("Start the cleaner first!")
     elif cmd == "d":
-        print("Docking.")
+        print(f"{shape} Cleaner returning to dock.")
     elif cmd == "e":
-        print("Exiting.")
+        print("Exiting program.")
         break
     else:
-        print("Invalid.")
+        print("Invalid command.")
