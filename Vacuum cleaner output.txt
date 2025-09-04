@@ -1,0 +1,18 @@
+Enter shape (c=Circle, s=Square, r=Rectangle, t=Triangle): c
+
+You selected: Circle Vacuum Cleaner
+
+Commands: a=auto, s=stop, l=left, r=right, d=dock, e=exit
+Enter command: a
+Circle Cleaner started in auto mode...
+Sliding left... Path is clear.
+Sliding right... Path is clear.
+
+Commands: a=auto, s=stop, l=left, r=right, d=dock, e=exit
+Enter command: r
+Circle Cleaner turned r.
+Enter command: l
+Circle Cleaner turned l.
+Enter command: e
+Exiting program.
+>>>
