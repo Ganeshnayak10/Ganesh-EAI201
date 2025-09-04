@@ -1,0 +1,45 @@
+Question:
+Perform 6 hyperlink-level navigation using Browser-use AI on government/academic portals.
+
+1st Level Navigation (Digital Payments):
+Task: Checked if RBI provides official information on digital transactions.
+Output: Yes. RBI publishes circulars, policy papers, and frameworks under Digital Payments & Settlements.
+
+https://www. RBI Digital Payments.com
+
+2nd Level Navigation (Digital Payments):
+Task: Looked for UPI official overview.
+Output: NPCI’s UPI portal explains features, security, and adoption details of Unified Payments Interface.
+
+https://wwwNPCI’S
+
+3rd Level Navigation (Digital Payments):
+Task: Searched for BHIM UPI details.
+Output: The official BHIM website describes the government’s UPI-based payment app, its benefits, and security features.
+
+https://wwwBHIM UPI
+
+4th Level Navigation (Seva Sindhu):
+Task: Explored Department-wise Services.
+Output: Found the Department Services page, showing categories like Transport, Revenue, Labour, and Education with online service links.
+
+https://www.Department Services.com
+
+5th Level Navigation (Seva Sindhu):
+Task: Looked for Citizen Registration.
+Output: The Citizen Registration page allows new users to register with Aadhaar, mobile, and OTP verification.
+
+https://www.Citizen Registration.com
+
+6th Level Navigation (Seva Sindhu):
+Task: Checked for Helpdesk / Support options.
+Output: The Seva Sindhu homepage provides toll-free numbers, email IDs, and complaint forms for grievance redressal.
+
+https://www Seva Sindhu Helpdesk.com
+
+Summary:
+Using Browser-use AI, we navigated across two domains:
+
+Digital Payments in India (RBI, UPI, BHIM)
+
+Karnataka E-Governance Services (Department services, Registration, Helpdesk).
