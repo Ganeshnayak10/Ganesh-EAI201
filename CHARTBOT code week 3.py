@@ -1,6 +1,5 @@
 from collections import deque
 
-# --- Campus Graph with Distances ---
 campus = {
     "Main Gate": {"Security Gate": 100},
     "Security Gate": {"Main Gate": 100, "Flag Pole": 120},
@@ -14,8 +13,6 @@ campus = {
     "Mini Mart": {"Hostel Block": 60},
     "Sports Area": {"Hostel Block": 250}
 }
-
-# --- FAQ Data ---
 faq_data = {
     "Main Gate": "The main entrance of the university.",
     "Security Gate": "Security check near the entrance.",
@@ -30,7 +27,6 @@ faq_data = {
     "Sports Area": "Ground and outdoor sports facilities."
 }
 
-# --- BFS Algorithm ---
 def bfs(graph, start, goal):
     visited = set()
     queue = deque([(start, [start], 0)])
@@ -49,7 +45,7 @@ def bfs(graph, start, goal):
 
     return None, 0, len(visited)
 
-# --- DFS Algorithm ---
+
 def dfs(graph, start, goal):
     visited = set()
     stack = [(start, [start], 0)]
@@ -68,10 +64,9 @@ def dfs(graph, start, goal):
 
     return None, 0, len(visited)
 
-# --- Print Result ---
 def print_result(path, cost, visited, method):
     if path:
-        print(f"\n🔹 {method} Result:")
+        print(f"\n {method} Result:")
         print(" Path:", " → ".join(path))
         print(" Path length:", len(path))
         print(" Total cost:", cost, "meters")
@@ -79,8 +74,8 @@ def print_result(path, cost, visited, method):
     else:
         print(f"\n No path found using {method}.\n")
 
-# --- User Interface ---
-print(" Welcome to University Navigation System (Week 3)\n")
+
+print(" Welcome to University Navigation System \n")
 
 while True:
     print("Options:")
@@ -126,3 +121,4 @@ while True:
 
     else:
         print(" Invalid option. Please choose again.\n")
+
