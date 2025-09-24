@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Navigation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+        
+        .map-container {
+            flex: 1;
+            height: 100%;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .path-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Campus Navigation</h2>
+            
+            <div class="form-group">
+                <label for="start">Start Location:</label>
+                <select id="start">
+                    <option value="">Select start location</option>
+                    <option value="main_gate">Main Gate</option>
+                    <option value="id_gate">ID Gate</option>
+                    <option value="flag_pole">Flag Pole</option>
+                    <option value="admin_block">Admin Block</option>
+                    <option value="library">Library</option>
+                    <option value="vending">Vending</option>
+                    <option value="cafeteria">Cafeteria</option>
+                    <option value="lawn_area">Lawn Area</option>
+                    <option value="block_2">Block 2</option>
+                    <option value="food_court">Food Court</option>
+                    <option value="hostel">Hostel</option>
+                    <option value="sports_area">Sports Area</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="goal">Destination:</label>
+                <select id="goal">
+                    <option value="">Select destination</option>
+                    <option value="main_gate">Main Gate</option>
+                    <option value="id_gate">ID Gate</option>
+                    <option value="flag_pole">Flag Pole</option>
+                    <option value="admin_block">Admin Block</option>
+                    <option value="library">Library</option>
+                    <option value="vending">Vending</option>
+                    <option value="cafeteria">Cafeteria</option>
+                    <option value="lawn_area">Lawn Area</option>
+                    <option value="block_2">Block 2</option>
+                    <option value="food_court">Food Court</option>
+                    <option value="hostel">Hostel</option>
+                    <option value="sports_area">Sports Area</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="algorithm">Pathfinding Algorithm:</label>
+                <select id="algorithm">
+                    <option value="bfs">Breadth-First Search (BFS)</option>
+                    <option value="dfs">Depth-First Search (DFS)</option>
+                    <option value="ucs">Uniform Cost Search (UCS)</option>
+                </select>
+            </div>
+            
+            <button id="find-path">Find Path</button>
+            
+            <div id="result"></div>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([13.2222, 77.7552], 16);
+        
+        // Add MapTiler layer
+        L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=9eknIXAwnjUnd8gwntx4', {
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>'
+        }).addTo(map);
+        
+        // Location coordinates
+        const locations = {
+            'main_gate': [13.2200, 77.7539],
+            'id_gate': [13.2214, 77.7549],
+            'flag_pole': [13.2218, 77.7550],
+            'admin_block': [13.2222, 77.7552],
+            'library': [13.221971, 77.75558],
+            'vending': [13.222264, 77.755126],
+            'cafeteria': [13.22242, 77.755158],
+            'lawn_area': [13.222775, 77.755576],
+            'block_2': [13.22336, 77.755963],
+            'food_court': [13.224758, 77.75725],
+            'hostel': [13.224195, 77.758613],
+            'sports_area': [13.22887, 77.7572]
+        };
+        
+        // Add markers for all locations
+        const markers = {};
+        Object.keys(locations).forEach(location => {
+            const coords = locations[location];
+            markers[location] = L.marker(coords)
+                .addTo(map)
+                .bindPopup(location.replace('_', ' ').toUpperCase());
+        });
+        
+        let pathLayer = null;
+        let startMarker = null;
+        let goalMarker = null;
+        
+        document.getElementById('find-path').addEventListener('click', findPath);
+        
+        async function findPath() {
+            const start = document.getElementById('start').value;
+            const goal = document.getElementById('goal').value;
+            const algorithm = document.getElementById('algorithm').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!start || !goal) {
+                showResult('Please select both start and destination locations.', 'error');
+                return;
+            }
+            
+            if (start === goal) {
+                showResult('Start and destination cannot be the same.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/find-path', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        start: start,
+                        goal: goal,
+                        algorithm: algorithm
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showResult(data.error, 'error');
+                    return;
+                }
+                
+                // Clear previous path
+                if (pathLayer) {
+                    map.removeLayer(pathLayer);
+                }
+                
+                // Clear previous markers
+                if (startMarker) map.removeLayer(startMarker);
+                if (goalMarker) map.removeLayer(goalMarker);
+                
+                // Add special markers for start and goal
+                startMarker = L.marker(locations[start], {
+                    icon: L.divIcon({
+                        className: 'start-marker',
+                        html: '🟢',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map).bindPopup('START: ' + start.replace('_', ' ').toUpperCase());
+                
+                goalMarker = L.marker(locations[goal], {
+                    icon: L.divIcon({
+                        className: 'goal-marker',
+                        html: '🔴',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map).bindPopup('GOAL: ' + goal.replace('_', ' ').toUpperCase());
+                
+                // Draw path
+                const pathCoords = data.path.map(point => [point.lat, point.lng]);
+                pathLayer = L.polyline(pathCoords, {
+                    color: 'blue',
+                    weight: 5,
+                    opacity: 0.7,
+                    smoothFactor: 1
+                }).addTo(map);
+                
+                // Fit map to show the entire path
+                map.fitBounds(pathLayer.getBounds());
+                
+                // Show result
+                const pathSteps = data.path.map((point, index) => 
+                    `${index + 1}. ${point.name}`
+                ).join('<br>');
+                
+                showResult(`
+                    <div class="path-info">
+                        <strong>Algorithm:</strong> ${data.algorithm}<br>
+                        <strong>Distance:</strong> ${data.distance} meters<br>
+                        <strong>Path:</strong><br>${pathSteps}
+                    </div>
+                `);
+                
+            } catch (error) {
+                showResult('Error finding path: ' + error.message, 'error');
+            }
+        }
+        
+        function showResult(message, type = 'success') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type === 'error' ? 'error' : ''}">${message}</div>`;
+        }
+        
+        // Add some custom CSS for markers
+        const style = document.createElement('style');
+        style.textContent = `
+            .start-marker, .goal-marker {
+                font-size: 18px;
+                text-align: center;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
